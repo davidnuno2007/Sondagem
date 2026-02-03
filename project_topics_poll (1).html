@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Topics Poll - Economics & Politics</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .poll-section {
+            padding: 30px;
+        }
+
+        .category {
+            margin-bottom: 40px;
+        }
+
+        .category h2 {
+            color: #667eea;
+            font-size: 22px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .topic-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .topic-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+            border-color: #667eea;
+        }
+
+        .topic-item.selected {
+            background: #e7eaf6;
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+
+        .topic-item input[type="checkbox"] {
+            width: 24px;
+            height: 24px;
+            margin-right: 15px;
+            cursor: pointer;
+            accent-color: #667eea;
+        }
+
+        .topic-content {
+            flex: 1;
+        }
+
+        .topic-number {
+            font-weight: bold;
+            color: #667eea;
+            margin-right: 8px;
+        }
+
+        .topic-text {
+            color: #333;
+            line-height: 1.5;
+        }
+
+        .vote-count {
+            background: #667eea;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .actions {
+            padding: 0 30px 30px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        button:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .results {
+            padding: 30px;
+            background: #f8f9fa;
+            display: none;
+        }
+
+        .results.show {
+            display: block;
+        }
+
+        .results h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .result-item {
+            background: white;
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .result-text {
+            flex: 1;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .result-votes {
+            background: #667eea;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-left: 15px;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.5s ease;
+        }
+
+        .selection-count {
+            background: #e7eaf6;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .poll-section {
+                padding: 20px;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🗳️ Project Topics Poll</h1>
+            <p>Select your preferred topics related to Economics & Politics</p>
+        </div>
+
+        <div class="poll-section">
+            <div class="selection-count" id="selectionCount">
+                0 topics selected
+            </div>
+
+            <div class="category">
+                <h2>🏛️ Political Focus</h2>
+                <div class="topic-item" data-id="1">
+                    <input type="checkbox" id="topic1">
+                    <div class="topic-content">
+                        <label for="topic1" style="cursor: pointer; display: block;">
+                            <span class="topic-number">#1</span>
+                            <span class="topic-text">How has the electoral support for far-right parties evolved in Europe over the last two decades?</span>
+                        </label>
+                    </div>
+                    <span class="vote-count">0</span>
+                </div>
+
+                <div class="topic-item" data-id="13">
+                    <input type="checkbox" id="topic13">
+                    <div class="topic-content">
+                        <label for="topic13" style="cursor: pointer; display: block;">
+                            <span class="topic-number">#13</span>
+                            <span class="topic-text">Is there a correlation between unemployment rates and support for far-right parties?</span>
+                        </label>
+                    </div>
+                    <span class="vote-count">0</span>
+                </div>
+
+                <div class="topic-item" data-id="16">
+                    <input type="checkbox" id="topic16">
+                    <div class="topic-content">
+                        <label for="topic16" style="cursor: pointer; display: block;">
+                            <span class="topic-number">#16</span>
+                            <span class="topic-text">Which policies are most often associated with far-right platforms?</span>
+                        </label>
+                    </div>
+                    <span class="vote-count">0</span>
+                </div>
+
+                <div class="topic-item" data-id="34">
+                    <input type="checkbox" id="topic34">
+                    <div class="topic-content">
+                        <label for="topic34" style="cursor: pointer; display: block;">
+                            <span class="topic-number">#34</span>
+                            <span class="topic-text">How do youth voting patterns differ from older generations?</span>
+                        </label>
+                    </div>
+                    <span class="vote-count">0</span>
+                </div>
+
+                <div class="topic-item" data-id="44">
+                    <input type="checkbox" id="topic44">
+                    <div class="topic-content">
+                        <label for="topic44" style="cursor: pointer; display: block;">
+                            <span class="topic-number">#44</span>
+                            <span class="topic-text">How do far-right vote shares correlate with immigration rates?</span>
+                        </label>
+                    </div>
+                    <span class="vote-count">0</span>
+                </div>
+
+                <div class="topic-item" data-id="78">
+                    <input type="checkbox" id="topic78">
+                    <div class="topic-content">
+                        <label for="topic78" style="cursor: pointer; display: block;">
+                            <span class="topic-number">#78</span>
+                            <span class="topic-text">What is the geographic distribution of far-right support?</span>
+                        </label>
+                    </div>
+                    <span class="vote-count">0</span>
+                </div>
+            </div>
+
+            <div class="category">
+                <h2>💰 Economic Focus</h2>
+                <div class="topic-item" data-id="4">
+                    <input type="checkbox" id="topic4">
+                    <div class="topic-content">
+                        <label for="topic4" style="cursor: pointer; display: block;">
+                            <span class="topic-number">#4</span>
+                            <span class="topic-text">How does the minimum wage compare to the poverty line?</span>
+                        </label>
+                    </div>
+                    <span class="vote-count">0</span>
+                </div>
+
+                <div class="topic-item" data-id="6">
+                    <input type="checkbox" id="topic6">
+                    <div class="topic-content">
+                        <label for="topic6" style="cursor: pointer; display: block;">
+                            <span class="topic-number">#6</span>
+                            <span class="topic-text">How does inequality vary between capital and labor income?</span>
+                        </label>
+                    </div>
+                    <span class="vote-count">0</span>
+                </div>
+
+                <div class="topic-item" data-id="7">
+                    <input type="checkbox" id="topic7">
+                    <div class="topic-content">
+                        <label for="topic7" style="cursor: pointer; display: block;">
+                            <span class="topic-number">#7</span>
+                            <span class="topic-text">How does part-time vs full-time status affect the gender pay gap?</span>
+                        </label>
+                    </div>
+                    <span class="vote-count">0</span>
+                </div>
+
+                <div class="topic-item" data-id="10">
+                    <input type="checkbox" id="topic10">
+                    <div class="topic-content">
+                        <label for="topic10" style="cursor: pointer; display: block;">
+                            <span class="topic-number">#10</span>
+                            <span class="topic-text">What is the extent of the gender pay gap across different EU countries?</span>
+                        </label>
+                    </div>
+                    <span class="vote-count">0</span>
+                </div>
+
+                <div class="topic-item" data-id="18">
+                    <input type="checkbox" id="topic18">
+                    <div class="topic-content">
+                        <label for="topic18" style="cursor: pointer; display: block;">
+                            <span class="topic-number">#18</span>
+                            <span class="topic-text">How do taxes and transfers affect income inequality?</span>
+                        </label>
+                    </div>
+                    <span class="vote-count">0</span>
+                </div>
+
+                <div class="topic-item" data-id="41">
+                    <input type="checkbox" id="topic41">
+                    <div class="topic-content">
+                        <label for="topic41" style="cursor: pointer; display: block;">
+                            <span class="topic-number">#41</span>
+                            <span class="topic-text">How has the cost of living changed in different EU countries over the past decade?</span>
+                        </label>
+                    </div>
+                    <span class="vote-count">0</span>
+                </div>
+
+                <div class="topic-item" data-id="47">
+                    <input type="checkbox" id="topic47">
+                    <div class="topic-content">
+                        <label for="topic47" style="cursor: pointer; display: block;">
+                            <span class="topic-number">#47</span>
+                            <span class="topic-text">Is there a relationship between minimum wage levels and poverty rates?</span>
+                        </label>
+                    </div>
+                    <span class="vote-count">0</span>
+                </div>
+
+                <div class="topic-item" data-id="84">
+                    <input type="checkbox" id="topic84">
+                    <div class="topic-content">
+                        <label for="topic84" style="cursor: pointer; display: block;">
+                            <span class="topic-number">#84</span>
+                            <span class="topic-text">Is there a link between minimum wage and income inequality (GINI)?</span>
+                        </label>
+                    </div>
+                    <span class="vote-count">0</span>
+                </div>
+
+                <div class="topic-item" data-id="90">
+                    <input type="checkbox" id="topic90">
+                    <div class="topic-content">
+                        <label for="topic90" style="cursor: pointer; display: block;">
+                            <span class="topic-number">#90</span>
+                            <span class="topic-text">What is the evolution of the GINI index over time?</span>
+                        </label>
+                    </div>
+                    <span class="vote-count">0</span>
+                </div>
+
+                <div class="topic-item" data-id="91">
+                    <input type="checkbox" id="topic91">
+                    <div class="topic-content">
+                        <label for="topic91" style="cursor: pointer; display: block;">
+                            <span class="topic-number">#91</span>
+                            <span class="topic-text">What is the top 10% income share across countries?</span>
+                        </label>
+                    </div>
+                    <span class="vote-count">0</span>
+                </div>
+
+                <div class="topic-item" data-id="94">
+                    <input type="checkbox" id="topic94">
+                    <div class="topic-content">
+                        <label for="topic94" style="cursor: pointer; display: block;">
+                            <span class="topic-number">#94</span>
+                            <span class="topic-text">How has income inequality changed over the past decade?</span>
+                        </label>
+                    </div>
+                    <span class="vote-count">0</span>
+                </div>
+
+                <div class="topic-item" data-id="100">
+                    <input type="checkbox" id="topic100">
+                    <div class="topic-content">
+                        <label for="topic100" style="cursor: pointer; display: block;">
+                            <span class="topic-number">#100</span>
+                            <span class="topic-text">How has the real value of minimum wage changed over time?</span>
+                        </label>
+                    </div>
+                    <span class="vote-count">0</span>
+                </div>
+
+                <div class="topic-item" data-id="116">
+                    <input type="checkbox" id="topic116">
+                    <div class="topic-content">
+                        <label for="topic116" style="cursor: pointer; display: block;">
+                            <span class="topic-number">#116</span>
+                            <span class="topic-text">What are the income inequality levels across EU countries?</span>
+                        </label>
+                    </div>
+                    <span class="vote-count">0</span>
+                </div>
+            </div>
+
+            <div class="category">
+                <h2>🔄 Economics & Politics Combined</h2>
+                <div class="topic-item" data-id="54">
+                    <input type="checkbox" id="topic54">
+                    <div class="topic-content">
+                        <label for="topic54" style="cursor: pointer; display: block;">
+                            <span class="topic-number">#54</span>
+                            <span class="topic-text">How does net migration relate to GDP growth in EU countries?</span>
+                        </label>
+                    </div>
+                    <span class="vote-count">0</span>
+                </div>
+
+                <div class="topic-item" data-id="82">
+                    <input type="checkbox" id="topic82">
+                    <div class="topic-content">
+                        <label for="topic82" style="cursor: pointer; display: block;">
+                            <span class="topic-number">#82</span>
+                            <span class="topic-text">What is the impact of immigration on local labor markets?</span>
+                        </label>
+                    </div>
+                    <span class="vote-count">0</span>
+                </div>
+            </div>
+
+            <div class="category">
+                <h2>👥 Labor Economics</h2>
+                <div class="topic-item" data-id="36">
+                    <input type="checkbox" id="topic36">
+                    <div class="topic-content">
+                        <label for="topic36" style="cursor: pointer; display: block;">
+                            <span class="topic-number">#36</span>
+                            <span class="topic-text">What is the duration of unemployment among youth?</span>
+                        </label>
+                    </div>
+                    <span class="vote-count">0</span>
+                </div>
+
+                <div class="topic-item" data-id="77">
+                    <input type="checkbox" id="topic77">
+                    <div class="topic-content">
+                        <label for="topic77" style="cursor: pointer; display: block;">
+                            <span class="topic-number">#77</span>
+                            <span class="topic-text">What are the trends in youth unemployment rates across EU countries?</span>
+                        </label>
+                    </div>
+                    <span class="vote-count">0</span>
+                </div>
+
+                <div class="topic-item" data-id="80">
+                    <input type="checkbox" id="topic80">
+                    <div class="topic-content">
+                        <label for="topic80" style="cursor: pointer; display: block;">
+                            <span class="topic-number">#80</span>
+                            <span class="topic-text">How does youth unemployment correlate with overall unemployment rates?</span>
+                        </label>
+                    </div>
+                    <span class="vote-count">0</span>
+                </div>
+
+                <div class="topic-item" data-id="66">
+                    <input type="checkbox" id="topic66">
+                    <div class="topic-content">
+                        <label for="topic66" style="cursor: pointer; display: block;">
+                            <span class="topic-number">#66</span>
+                            <span class="topic-text">What is the share of NEETs (Not in Employment, Education, or Training)?</span>
+                        </label>
+                    </div>
+                    <span class="vote-count">0</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="actions">
+            <button onclick="submitVote()">Submit Your Votes</button>
+            <button class="btn-secondary" onclick="showResults()">View Results</button>
+            <button class="btn-secondary" onclick="resetPoll()">Reset Poll</button>
+        </div>
+
+        <div class="results" id="results">
+            <h2>📊 Poll Results</h2>
+            <div id="resultsContainer"></div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize votes from localStorage
+        let votes = JSON.parse(localStorage.getItem('projectPollVotes')) || {};
+
+        // Update vote counts on page load
+        updateVoteCounts();
+
+        // Add event listeners to checkboxes
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                updateSelectionCount();
+                this.closest('.topic-item').classList.toggle('selected', this.checked);
+            });
+        });
+
+        // Add click listener to topic items
+        document.querySelectorAll('.topic-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                if (e.target.type !== 'checkbox' && e.target.tagName !== 'LABEL') {
+                    const checkbox = this.querySelector('input[type="checkbox"]');
+                    checkbox.checked = !checkbox.checked;
+                    checkbox.dispatchEvent(new Event('change'));
+                }
+            });
+        });
+
+        function updateSelectionCount() {
+            const count = document.querySelectorAll('input[type="checkbox"]:checked').length;
+            document.getElementById('selectionCount').textContent = `${count} topic${count !== 1 ? 's' : ''} selected`;
+        }
+
+        function updateVoteCounts() {
+            document.querySelectorAll('.topic-item').forEach(item => {
+                const id = item.dataset.id;
+                const voteCount = votes[id] || 0;
+                item.querySelector('.vote-count').textContent = voteCount;
+            });
+        }
+
+        function submitVote() {
+            const selectedTopics = [];
+            document.querySelectorAll('input[type="checkbox"]:checked').forEach(checkbox => {
+                const topicId = checkbox.closest('.topic-item').dataset.id;
+                selectedTopics.push(topicId);
+                votes[topicId] = (votes[topicId] || 0) + 1;
+            });
+
+            if (selectedTopics.length === 0) {
+                alert('Please select at least one topic before submitting!');
+                return;
+            }
+
+            // Save to localStorage
+            localStorage.setItem('projectPollVotes', JSON.stringify(votes));
+
+            // Update display
+            updateVoteCounts();
+
+            // Uncheck all boxes
+            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = false;
+                checkbox.closest('.topic-item').classList.remove('selected');
+            });
+            updateSelectionCount();
+
+            alert(`Thank you! Your vote for ${selectedTopics.length} topic${selectedTopics.length !== 1 ? 's' : ''} has been recorded.`);
+        }
+
+        function showResults() {
+            const resultsContainer = document.getElementById('resultsContainer');
+            const resultsSection = document.getElementById('results');
+
+            // Get all topics with votes
+            const topicsWithVotes = [];
+            document.querySelectorAll('.topic-item').forEach(item => {
+                const id = item.dataset.id;
+                const text = item.querySelector('.topic-text').textContent;
+                const number = item.querySelector('.topic-number').textContent;
+                const voteCount = votes[id] || 0;
+                topicsWithVotes.push({ id, number, text, votes: voteCount });
+            });
+
+            // Sort by votes descending
+            topicsWithVotes.sort((a, b) => b.votes - a.votes);
+
+            // Calculate max votes for progress bar
+            const maxVotes = Math.max(...topicsWithVotes.map(t => t.votes), 1);
+
+            // Generate results HTML
+            let html = '';
+            topicsWithVotes.forEach(topic => {
+                const percentage = (topic.votes / maxVotes) * 100;
+                html += `
+                    <div class="result-item">
+                        <div class="result-header">
+                            <div class="result-text">
+                                <strong>${topic.number}</strong> ${topic.text}
+                            </div>
+                            <div class="result-votes">${topic.votes} vote${topic.votes !== 1 ? 's' : ''}</div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${percentage}%"></div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            resultsContainer.innerHTML = html;
+            resultsSection.classList.add('show');
+            resultsSection.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function resetPoll() {
+            if (confirm('Are you sure you want to reset all votes? This cannot be undone.')) {
+                votes = {};
+                localStorage.removeItem('projectPollVotes');
+                updateVoteCounts();
+                document.getElementById('results').classList.remove('show');
+                alert('Poll has been reset!');
+            }
+        }
+    </script>
+</body>
+</html>
